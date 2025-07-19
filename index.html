@@ -3,189 +3,168 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CD IELTS Reading</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+  <title>IELTS CD Reading Simulator</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #f0f4f8;
+      background-color: #f4f4f9;
       color: #333;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
     }
     header {
-      background-color: #1a73e8;
-      color: white;
+      background-color: #003366;
+      color: #fff;
       padding: 15px;
       text-align: center;
       font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .container {
+      display: flex;
+      height: calc(100vh - 70px);
+    }
+    .left, .right {
+      padding: 10px;
+      overflow-y: auto;
+    }
+    .left {
+      flex: 2;
+      background-color: #fff;
+      border-right: 2px solid #ccc;
+    }
+    .right {
+      flex: 1;
+      background-color: #f0f8ff;
       position: relative;
     }
-    #timer {
-      position: absolute;
-      right: 20px;
-      top: 15px;
-      background: #ffffff20;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 1.2rem;
-    }
-    main {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
-    #passage {
-      flex: 1;
-      background: #ffffff;
-      padding: 20px;
-      overflow-y: auto;
-      border-right: 2px solid #ddd;
-    }
-    #questions {
-      flex: 1;
-      background: #f9f9f9;
-      padding: 20px;
-      overflow-y: auto;
-    }
-    .question {
-      margin-bottom: 20px;
-      padding: 10px;
-      background: #fff;
-      border-radius: 5px;
-    }
-    .question h4 {
-      margin: 0 0 10px;
-    }
-    .options label {
-      display: block;
-      margin: 5px 0;
-      cursor: pointer;
-    }
-    .finish-btn {
-      background-color: #1a73e8;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      font-size: 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-    .finish-btn:hover {
-      background-color: #155ecf;
+    .upload-section {
+      text-align: center;
+      margin-top: 50px;
     }
     .upload-btn {
-      background-color: #1a73e8;
+      padding: 15px 30px;
+      background-color: #0055a5;
       color: #fff;
       border: none;
-      padding: 15px 30px;
       font-size: 1.2rem;
-      border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 8px;
       transition: background 0.3s ease;
-      margin: 20px auto;
     }
     .upload-btn:hover {
-      background-color: #155ecf;
+      background-color: #003366;
+    }
+    .timer {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #003366;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    .question {
+      margin: 10px 0;
+    }
+    .question input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .finish-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #0055a5;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1.1rem;
+    }
+    .finish-btn:hover {
+      background-color: #003366;
     }
     footer {
       text-align: center;
       padding: 10px;
-      background-color: #f0f0f0;
       font-size: 0.9rem;
+      color: #555;
     }
   </style>
 </head>
 <body>
-  <header>
-    CD IELTS Reading
-    <div id="timer">60:00</div>
-  </header>
-
-  <main>
-    <div id="upload-section">
-      <button class="upload-btn" onclick="document.getElementById('pdf-upload').click()">Загрузить PDF</button>
-      <input type="file" id="pdf-upload" accept="application/pdf" hidden />
+  <header>IELTS CD Reading Simulator</header>
+  <div class="container">
+    <div class="left" id="pdfViewer">
+      <div class="upload-section" id="uploadSection">
+        <h2>Загрузите PDF файл IELTS</h2>
+        <input type="file" id="fileInput" accept="application/pdf" hidden />
+        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Загрузить PDF</button>
+      </div>
     </div>
-    <div id="reading-section" style="display:none;">
-      <div id="passage"><h3>Loading passage...</h3></div>
-      <div id="questions"><h3>Loading questions...</h3></div>
+    <div class="right" id="questionSection" style="display:none;">
+      <div class="timer" id="timer">60:00</div>
+      <div id="questions">
+        <div class="question">
+          <label>Question 1</label>
+          <input type="text" placeholder="Your answer...">
+        </div>
+        <div class="question">
+          <label>Question 2</label>
+          <input type="text" placeholder="Your answer...">
+        </div>
+        <div class="question">
+          <label>Question 3</label>
+          <input type="text" placeholder="Your answer...">
+        </div>
+        <!-- Add more questions as needed -->
+      </div>
+      <button class="finish-btn" onclick="finishTest()">Завершить тест</button>
     </div>
-  </main>
-
-  <footer>
-    By Miraboss Mirzakhidov
-  </footer>
+  </div>
+  <footer>By Mirabbos Mirzakhidov</footer>
 
   <script>
-    let timeLeft = 60 * 60; // 60 minutes
+    const timerEl = document.getElementById('timer');
+    let time = 60 * 60; // 60 minutes
+    let timerInterval;
+
+    document.getElementById('fileInput').addEventListener('change', function() {
+      const uploadSection = document.getElementById('uploadSection');
+      const questionSection = document.getElementById('questionSection');
+      uploadSection.style.display = 'none';
+      questionSection.style.display = 'block';
+
+      startTimer();
+
+      // Show PDF file name as placeholder (PDF.js integration required for real PDF view)
+      const pdfViewer = document.getElementById('pdfViewer');
+      pdfViewer.innerHTML = `<h3>Вы просматриваете файл: ${this.files[0].name}</h3>`;
+    });
 
     function startTimer() {
-      const timerEl = document.getElementById('timer');
-      setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
+      timerInterval = setInterval(() => {
+        let minutes = Math.floor(time / 60);
+        let seconds = time % 60;
         timerEl.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        if (timeLeft > 0) timeLeft--;
+        time--;
+        if (time < 0) {
+          clearInterval(timerInterval);
+          finishTest();
+        }
       }, 1000);
     }
 
-    document.getElementById('pdf-upload').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        parsePDF(file);
-        startTimer();
-      }
-    });
-
-    function parsePDF(file) {
-      const reader = new FileReader();
-      reader.onload = function() {
-        const typedarray = new Uint8Array(this.result);
-        pdfjsLib.getDocument(typedarray).promise.then(pdf => {
-          let textContent = '';
-          let pagePromises = [];
-          for (let i = 1; i <= pdf.numPages; i++) {
-            pagePromises.push(pdf.getPage(i).then(page => {
-              return page.getTextContent().then(content => {
-                const strings = content.items.map(item => item.str);
-                textContent += strings.join(' ') + '\n';
-              });
-            }));
-          }
-          Promise.all(pagePromises).then(() => {
-            displayContent(textContent);
-          });
-        });
-      };
-      reader.readAsArrayBuffer(file);
-    }
-
-    function displayContent(text) {
-      document.getElementById('upload-section').style.display = 'none';
-      document.getElementById('reading-section').style.display = 'flex';
-      // Split text into passage and questions (simple split for demo)
-      const [passageText, questionText] = text.split("Questions");
-      document.getElementById('passage').innerText = passageText || "Passage not found.";
-      const questionsDiv = document.getElementById('questions');
-      questionsDiv.innerHTML = '';
-      const sampleQuestions = questionText ? questionText.split(/\d+\./).filter(q => q.trim()) : ["No questions found."];
-      sampleQuestions.forEach((q, idx) => {
-        const div = document.createElement('div');
-        div.className = 'question';
-        div.innerHTML = `<h4>Question ${idx + 1}</h4><p>${q}</p><input type="text" placeholder="Your answer here" style="width: 100%; padding: 8px;">`;
-        questionsDiv.appendChild(div);
-      });
-      const finishBtn = document.createElement('button');
-      finishBtn.className = 'finish-btn';
-      finishBtn.textContent = 'Finish Test';
-      finishBtn.onclick = () => alert('Test submitted! Band Score calculated.');
-      questionsDiv.appendChild(finishBtn);
+    function finishTest() {
+      clearInterval(timerInterval);
+      alert("Тест завершен! Ваши ответы сохранены.");
+      // Here you can add saving to "My Tests" logic
     }
   </script>
 </body>
 </html>
+
